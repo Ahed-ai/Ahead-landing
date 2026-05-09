@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ahead — Il tuo Chief of Staff personale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+:root {
+  --bg:       #0a0a08;
+  --bg2:      #111110;
+  --bg3:      #1a1a17;
+  --line:     rgba(255,255,255,0.07);
+  --line2:    rgba(255,255,255,0.12);
+  --text:     #e8e6df;
+  --muted:    #7a7870;
+  --accent:   #c8b97a;
+  --accent2:  #8a9e7a;
+  --white:    #f5f3ed;
+  --serif:    'Cormorant Garamond', Georgia, serif;
+  --mono:     'DM Mono', monospace;
+  --sans:     'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 48px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.4s, background 0.4s, backdrop-filter 0.4s;
+}
+nav.scrolled {
+  border-color: var(--line);
+  background: rgba(10,10,8,0.85);
+  backdrop-filter: blur(20px);
+}
+.logo {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--white);
+  text-transform: uppercase;
+}
+.logo span { color: var(--accent); }
+.nav-cta {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--line2);
+  padding: 10px 20px;
+  text-decoration: none;
+  transition: color 0.3s, border-color 0.3s;
+}
+.nav-cta:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 140px 80px 80px 80px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(3.2rem, 5vw, 5.5rem);
+  font-weight: 300;
+  line-height: 1.08;
+  color: var(--white);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 420px;
+  line-height: 1.75;
+  margin-bottom: 56px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+.hero-sub strong { color: var(--text); font-weight: 400; }
+
+.hero-form {
+  display: flex;
+  gap: 0;
+  max-width: 440px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+.hero-form input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--line2);
+  border-right: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 300;
+  padding: 16px 20px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.hero-form input::placeholder { color: var(--muted); }
+.hero-form input:focus { border-color: var(--accent); }
+.hero-form button {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 16px 28px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  white-space: nowrap;
+}
+.hero-form button:hover { background: var(--white); border-color: var(--white); }
+
+.hero-note {
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  opacity: 0;
+  animation: fadeUp 0.8s 1s forwards;
+}
+
+/* ── HERO RIGHT — VISUAL ── */
+.hero-right {
+  position: relative;
+  border-left: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.hero-visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 60px 60px;
+}
+
+.card-stack {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+}
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  padding: 24px 28px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.card:nth-child(1) { animation: fadeUp 0.7s 1s forwards; }
+.card:nth-child(2) { animation: fadeUp 0.7s 1.2s forwards; margin-top: 12px; border-top-color: var(--accent); }
+.card:nth-child(3) { animation: fadeUp 0.7s 1.4s forwards; margin-top: 12px; }
+
+.card-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.card-content {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.card-content strong { color: var(--accent); font-weight: 400; }
+.card-content .green { color: var(--accent2); }
+
+.card-tag {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--line2);
+  color: var(--muted);
+}
+.card-tag.urgent { border-color: #c87a7a44; color: #c87a7a; }
+.card-tag.done { border-color: #7ac87a44; color: var(--accent2); }
+.card-tag.ahead { border-color: #c8b97a44; color: var(--accent); }
+
+.pulse {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent2);
+  margin-right: 8px;
+  animation: pulse 2s infinite;
+  vertical-align: middle;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+.stat-item {
+  padding: 48px;
+  border-right: 1px solid var(--line);
+  opacity: 0;
+  animation: fadeUp 0.6s forwards;
+}
+.stat-item:nth-child(1) { animation-delay: 0.1s; }
+.stat-item:nth-child(2) { animation-delay: 0.2s; }
+.stat-item:nth-child(3) { animation-delay: 0.3s; border-right: none; }
+
+.stat-number {
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-number span { color: var(--accent); }
+.stat-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ── SECTION ── */
+section { padding: 120px 80px; }
+
+.section-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 3.5vw, 3.8rem);
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--white);
+  margin-bottom: 20px;
+}
+.section-title em { font-style: italic; color: var(--accent); }
+
+.section-sub {
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.75;
+}
+
+/* ── PROBLEM SECTION ── */
+.problem-section {
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  padding: 120px 80px;
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  margin-top: 80px;
+}
+
+.problem-item {
+  border-top: 1px solid var(--line2);
+  padding-top: 32px;
+}
+
+.problem-number {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.problem-title {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--white);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+
+.problem-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+/* ── HOW IT WORKS ── */
+.how-section {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--line);
+}
+
+.steps {
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+  padding: 48px 0;
+  border-top: 1px solid var(--line);
+}
+
+.step-num {
+  font-family: var(--serif);
+  font-size: 4rem;
+  font-weight: 300;
+  color: var(--line2);
+  line-height: 1;
+}
+
+.step-title {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.step-title em { font-style: italic; color: var(--accent); }
+
+.step-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.step-example {
+  background: var(--bg3);
+  border: 1px solid var(--line2);
+  padding: 20px 24px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.8;
+  align-self: center;
+}
+.step-example .highlight { color: var(--accent); }
+.step-example .green { color: var(--accent2); }
+
+/* ── QUOTE ── */
+.quote-section {
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  padding: 120px 80px;
+  text-align: center;
+}
+
+.big-quote {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--white);
+  max-width: 900px;
+  margin: 0 auto 32px;
+  line-height: 1.4;
+}
+.big-quote em { color: var(--accent); font-style: normal; }
+
+.quote-source {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── FOR WHO ── */
+.for-section {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--line);
+}
+
+.for-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  margin-top: 80px;
+  border: 1px solid var(--line);
+}
+
+.for-item {
+  background: var(--bg2);
+  padding: 48px 40px;
+}
+
+.for-icon {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.for-title {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+
+.for-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── NOT FOR ── */
+.not-for {
+  margin-top: 60px;
+  padding: 40px;
+  border: 1px solid var(--line);
+  background: var(--bg3);
+  max-width: 700px;
+}
+
+.not-for-title {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.not-for-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.not-for-list li {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding-left: 20px;
+  position: relative;
+}
+.not-for-list li::before {
+  content: '×';
+  position: absolute;
+  left: 0;
+  color: #c87a7a88;
+}
+
+/* ── CTA FINAL ── */
+.cta-section {
+  background: var(--bg);
+  padding: 160px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-bg-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cta-bg-line:nth-child(2) { width: 900px; height: 900px; opacity: 0.5; }
+.cta-bg-line:nth-child(3) { width: 1200px; height: 1200px; opacity: 0.25; }
+
+.cta-section .section-title { position: relative; z-index: 1; }
+.cta-section .section-sub {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto 56px;
+  text-align: center;
+  max-width: 480px;
+}
+
+.cta-form {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.cta-form input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--line2);
+  border-right: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 300;
+  padding: 18px 24px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.cta-form input::placeholder { color: var(--muted); }
+.cta-form input:focus { border-color: var(--accent); }
+.cta-form button {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 18px 32px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  white-space: nowrap;
+}
+.cta-form button:hover { background: var(--white); border-color: var(--white); }
+
+.cta-note {
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+/* ── COUNTER ── */
+.counter-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 56px;
+}
+.counter-dots {
+  display: flex;
+  gap: 4px;
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.3;
+}
+.dot.active { opacity: 1; }
+.counter-text {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+.counter-text strong { color: var(--accent); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 40px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.footer-logo span { color: var(--accent); }
+
+.footer-note {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* ── SUCCESS STATE ── */
+.success-msg {
+  display: none;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--accent2);
+  padding: 18px 0;
+  text-align: center;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 20px 24px; }
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-left { padding: 120px 24px 60px; }
+  .hero-right { display: none; }
+  .stats-bar { grid-template-columns: 1fr; }
+  .stat-item { border-right: none; border-bottom: 1px solid var(--line); padding: 32px 24px; }
+  section { padding: 80px 24px; }
+  .problem-section, .quote-section, .cta-section { padding: 80px 24px; }
+  .problem-grid { grid-template-columns: 1fr; gap: 40px; }
+  .step { grid-template-columns: 48px 1fr; }
+  .step-example { display: none; }
+  .for-grid { grid-template-columns: 1fr; }
+  .cta-form { flex-direction: column; }
+  .cta-form input { border-right: 1px solid var(--line2); border-bottom: none; }
+  footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+  .hero-form { flex-direction: column; }
+  .hero-form input { border-right: 1px solid var(--line2); border-bottom: none; }
+}
+```
+
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+
+  <nav id="nav">
+    <div class="logo">A<span>.</span>head</div>
+    <a href="#waitlist" class="nav-cta">Lista d'attesa</a>
+  </nav>
+
+  <!-- HERO -->
+
+  <section class="hero">
+    <div class="hero-left">
+      <p class="hero-eyebrow">Prossimamente — Accesso anticipato</p>
+      <h1 class="hero-title">
+        Il tuo<br>
+        <em>Chief of Staff</em><br>
+        personale.
+      </h1>
+      <p class="hero-sub">
+        Ahead connette lavoro e vita privata, <strong>anticipa le crisi prima che accadano</strong>, e gestisce tutto ciò che puoi delegare.<br><br>
+        Tu pensi solo a ciò che conta davvero.
+      </p>
+      <div class="hero-form" id="hero-form-wrap">
+        <input type="email" id="hero-email" placeholder="La tua email" />
+        <button onclick="submitEmail('hero')">Unisciti →</button>
+      </div>
+      <div class="success-msg" id="hero-success">
+        ✓ &nbsp;Sei in lista. Ti contatteremo tra i primi.
+      </div>
+      <p class="hero-note">Nessuna app da scaricare · Nessuna carta di credito · Posti limitati</p>
+    </div>
+
+```
+<div class="hero-right">
+  <div class="hero-visual">
+    <div class="card-stack">
+
+      <div class="card">
+        <div class="card-label">Scadenza rilevata</div>
+        <div class="card-content">
+          Il tuo <strong>bollo auto</strong> scade tra 9 giorni.<br>
+          Ho trovato come pagarlo online in 2 minuti.
+        </div>
+        <span class="card-tag urgent">Urgente</span>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Ahead sta agendo</div>
+        <div class="card-content">
+          <span class="pulse"></span>
+          Confronto preventivi assicurazione RC →<br>
+          <span class="green">Risparmio stimato: €180/anno</span>
+        </div>
+        <span class="card-tag ahead">In corso</span>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Settimana sotto controllo</div>
+        <div class="card-content">
+          3 scadenze gestite · 2 task delegati<br>
+          Nessuna crisi questa settimana.
+        </div>
+        <span class="card-tag done">✓ Tutto a posto</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+```
+
+  </section>
+
+  <!-- STATS BAR -->
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-number">8<span>+</span></div>
+      <div class="stat-label">App usate in media da un professionista impegnato.<br>Nessuna si parla con le altre.</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">2<span>h</span></div>
+      <div class="stat-label">Al giorno sprecate in task amministrativi, scadenze, burocrazia.<br>Tempo che potrebbe essere tuo.</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">0</div>
+      <div class="stat-label">App oggi ti avvisa prima che arrivi la crisi,<br>lavorativa o privata. Ahead è la prima.</div>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+
+  <div class="problem-section">
+    <p class="section-eyebrow">Il problema</p>
+    <h2 class="section-title">Non sei disorganizzato.<br><em>Sei semplicemente umano.</em></h2>
+    <p class="section-sub">
+      Le crisi non arrivano perché sei incapace. Arrivano perché nessun sistema pensa per te in modo integrato.
+    </p>
+
+```
+<div class="problem-grid">
+  <div class="problem-item">
+    <div class="problem-number">01</div>
+    <h3 class="problem-title">Caos mentale</h3>
+    <p class="problem-desc">La tua testa è sempre piena. Riunioni, scadenze fiscali, visite mediche da prenotare, assicurazioni da rinnovare. Tutto mescolato, tutto urgente, tutto dimenticabile.</p>
+  </div>
+  <div class="problem-item">
+    <div class="problem-number">02</div>
+    <h3 class="problem-title">Frammentazione totale</h3>
+    <p class="problem-desc">Usi 8-10 app diverse ma ognuna sa solo una parte della storia. Il tuo calendario non sa dell'F24. La tua banca non sa della visita medica. Nessuno guarda il quadro completo.</p>
+  </div>
+  <div class="problem-item">
+    <div class="problem-number">03</div>
+    <h3 class="problem-title">Gestione reattiva</h3>
+    <p class="problem-desc">Corri da un'emergenza all'altra. La scadenza arriva, la crisi esplode, tu risolvi. Poi ricomincia. Non è colpa tua — è che non esiste ancora niente che pensi in anticipo per te.</p>
+  </div>
+  <div class="problem-item">
+    <div class="problem-number">04</div>
+    <h3 class="problem-title">Confine lavoro-vita sfumato</h3>
+    <p class="problem-desc">Il tuo carico mentale non distingue tra lavoro e vita privata. La riunione delle 9 e il rinnovo dell'assicurazione occupano lo stesso spazio nella tua testa. Nessuna app lo capisce.</p>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- HOW IT WORKS -->
+
+  <section class="how-section">
+    <p class="section-eyebrow">Come funziona</p>
+    <h2 class="section-title">Non un'altra app.<br><em>Un sistema operativo</em> per la tua vita.</h2>
+
+```
+<div class="steps">
+  <div class="step">
+    <div class="step-num">01</div>
+    <div>
+      <h3 class="step-title"><em>Scarica</em> la testa</h3>
+      <p class="step-desc">Parla o scrivi liberamente. "Devo rinnovare l'assicurazione, chiamare il commercialista, prenotare la gastroscopia." Ahead struttura, categorizza e agenda tutto. Nessun formato richiesto.</p>
+    </div>
+    <div class="step-example">
+      <span class="highlight">Tu:</span> "ho la visita cardiologica da prenotare,<br>
+      scadenza IMU a giugno e devo sentire<br>
+      il mio avvocato per il contratto"<br><br>
+      <span class="green">Ahead:</span> Capito. 3 task aggiunti.<br>
+      Visita → prenoterò appena possibile.<br>
+      IMU → ti avviso 3 settimane prima.<br>
+      Avvocato → reminder domani ore 10.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">02</div>
+    <div>
+      <h3 class="step-title"><em>Connette</em> tutto</h3>
+      <p class="step-desc">Si collega a Gmail, calendario, home banking, app sanitarie, SPID. Legge le email importanti, le scadenze nei documenti, i movimenti anomali. Non aspetta che tu vada a cercare — viene da te.</p>
+    </div>
+    <div class="step-example">
+      <span class="highlight">Rilevato in Gmail:</span><br>
+      Email da ACI → bollo auto scade<br>
+      in 11 giorni. <span class="green">Task creato.</span><br><br>
+      <span class="highlight">Rilevato in homebanking:</span><br>
+      Abbonamento duplicato → €9,99/mese<br>
+      per servizio non utilizzato da 6 mesi.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">03</div>
+    <div>
+      <h3 class="step-title"><em>Anticipa</em> le crisi</h3>
+      <p class="step-desc">Mappa tutte le tue scadenze ricorrenti, le incrocia con il calendario e ti avvisa con anticipo sufficiente per agire. Non una notifica generica — un piano d'azione concreto con il tempo per eseguirlo.</p>
+    </div>
+    <div class="step-example">
+      <span class="highlight">Ahead:</span> Tra 18 giorni scade la tua<br>
+      RC auto. Vuoi che confronti<br>
+      i preventivi online?<br><br>
+      <span class="green">[ Sì, vai → ]</span> &nbsp; [ Gestisco io ]<br><br>
+      <span class="highlight">Ahead:</span> Trovato risparmio di €156.<br>
+      Confermo il nuovo preventivo?
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">04</div>
+    <div>
+      <h3 class="step-title"><em>Agisce</em> per te</h3>
+      <p class="step-desc">Dove possibile, non si limita a ricordare. Prenota, compila, confronta, imposta. Tu approvi con un tap. Il principio è semplice: delega tutto ciò che non richiede la tua presenza mentale.</p>
+    </div>
+    <div class="step-example">
+      <span class="highlight">Delegato a Ahead questa settimana:</span><br><br>
+      <span class="green">✓</span> Pagamento bollo auto<br>
+      <span class="green">✓</span> Prenotazione visita medica<br>
+      <span class="green">✓</span> Rinnovo abbonamento streaming<br>
+      <span class="green">✓</span> Reminder commercialista<br><br>
+      Tempo risparmiato: ~2.5 ore
+    </div>
+  </div>
+</div>
+```
+
+  </section>
+
+  <!-- QUOTE -->
+
+  <div class="quote-section">
+    <p class="big-quote">
+      "Non voglio un'altra app da gestire.<br>
+      Voglio qualcosa che mi conosca così bene<br>
+      da <em>sparire sullo sfondo</em> della mia vita."
+    </p>
+    <p class="quote-source">— Il professionista che Ahead sta costruendo per te</p>
+  </div>
+
+  <!-- FOR WHO -->
+
+  <section class="for-section">
+    <p class="section-eyebrow">Per chi è</p>
+    <h2 class="section-title">Ahead non è per tutti.<br><em>È per pochi.</em></h2>
+    <p class="section-sub">
+      Stiamo costruendo qualcosa di profondo, non di generico. I primi utenti saranno persone che sentono il problema nella pelle ogni giorno.
+    </p>
+
+```
+<div class="for-grid">
+  <div class="for-item">
+    <div class="for-icon">⚡</div>
+    <h3 class="for-title">Il professionista sempre in moto</h3>
+    <p class="for-desc">Manager, consulenti, avvocati, medici. Persone il cui tempo vale più dell'overhead amministrativo che li soffoca ogni giorno.</p>
+  </div>
+  <div class="for-item">
+    <div class="for-icon">🧩</div>
+    <h3 class="for-title">L'imprenditore / freelance</h3>
+    <p class="for-desc">Chi non ha un ufficio amministrativo alle spalle. Chi gestisce tutto da solo — lavoro, finanze, burocrazia, salute — senza margine di errore.</p>
+  </div>
+  <div class="for-item">
+    <div class="for-icon">🎯</div>
+    <h3 class="for-title">Chi vuole tornare a pensare in grande</h3>
+    <p class="for-desc">Persone che sanno che la loro energia migliore non dovrebbe finire su scadenze, assicurazioni e pratiche. Persone che vogliono uno strumento all'altezza delle loro ambizioni.</p>
+  </div>
+</div>
+
+<div class="not-for">
+  <p class="not-for-title">Ahead non fa per te se</p>
+  <ul class="not-for-list">
+    <li>Vuoi solo un'altra todo list</li>
+    <li>Non sei disposto a connettere le tue app per avere un quadro completo</li>
+    <li>Preferisci controllare ogni singolo dettaglio manualmente</li>
+    <li>Non ti fidi di un sistema che agisce per te</li>
+  </ul>
+</div>
+```
+
+  </section>
+
+  <!-- FINAL CTA -->
+
+  <section class="cta-section" id="waitlist">
+    <div class="cta-bg-line"></div>
+    <div class="cta-bg-line"></div>
+    <div class="cta-bg-line"></div>
+
+```
+<p class="section-eyebrow">Lista d'attesa</p>
+<h2 class="section-title">Smetti di rincorrere.<br><em>Inizia ad anticipare.</em></h2>
+<p class="section-sub">
+  Stiamo selezionando i primi 200 utenti. Saranno loro a plasmare il prodotto con noi. I posti sono limitati, l'accesso è gratuito.
+</p>
+
+<div class="counter-bar">
+  <div class="counter-dots">
+    <div class="dot active"></div>
+    <div class="dot active"></div>
+    <div class="dot active"></div>
+    <div class="dot active"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <p class="counter-text"><strong>127</strong> / 200 posti già riservati</p>
+</div>
+
+<div id="cta-form-wrap">
+  <div class="cta-form">
+    <input type="email" id="cta-email" placeholder="La tua email professionale" />
+    <button onclick="submitEmail('cta')">Riserva il posto →</button>
+  </div>
+</div>
+<div class="success-msg" id="cta-success">
+  ✓ &nbsp;Sei dentro. Ti contatteremo presto con i dettagli.
+</div>
+<p class="cta-note">Nessuna app da scaricare · Nessuna carta di credito · Puoi uscire quando vuoi</p>
+```
+
+  </section>
+
+  <!-- FOOTER -->
+
+  <footer>
+    <div class="footer-logo">A<span>.</span>head</div>
+    <p class="footer-note">Un progetto in costruzione · © 2026 · Tutti i diritti riservati</p>
+  </footer>
+
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Email submit
+    function submitEmail(source) {
+      const emailInput = document.getElementById(source === 'hero' ? 'hero-email' : 'cta-email');
+      const email = emailInput.value.trim();
+
+      if (!email || !email.includes('@')) {
+        emailInput.style.borderColor = '#c87a7a';
+        setTimeout(() => emailInput.style.borderColor = '', 1500);
+        return;
+      }
+
+      if (source === 'hero') {
+        document.getElementById('hero-form-wrap').style.display = 'none';
+        document.getElementById('hero-success').style.display = 'block';
+      } else {
+        document.getElementById('cta-form-wrap').style.display = 'none';
+        document.getElementById('cta-success').style.display = 'block';
+        // Aggiorna il counter visivamente
+        document.querySelector('.counter-text').innerHTML = '<strong>128</strong> / 200 posti già riservati';
+        const dots = document.querySelectorAll('.dot');
+        dots[5].classList.add('active');
+      }
+    }
+
+    // Enter key su input
+    document.querySelectorAll('input[type="email"]').forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          const src = input.id === 'hero-email' ? 'hero' : 'cta';
+          submitEmail(src);
+        }
+      });
+    });
+
+    // Intersection observer per animazioni on-scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.problem-item, .step, .for-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>
